@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Dice5, EyeOff, ListChecks, PenLine, RefreshCw, Shuffle, Timer } from 'lucide-react';
+import { Brush, Dice5, Heart, ListChecks, Palette, Shuffle, Wine } from 'lucide-react';
 import { useMemo, useState, type ReactNode } from 'react';
 import { BUCKET_LIST_PROMPTS, COUPLE_QUESTIONS, JAR_QUESTIONS } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
@@ -119,47 +119,139 @@ function QuestionGame() {
 }
 
 /* ------------------------------------------------------------------ */
-/* 2. Blind drawing challenge                                          */
+/* 2. Paint & Sip                                                      */
 /* ------------------------------------------------------------------ */
-function DrawingChallenge() {
+const PAINT_PALETTES: { name: string; sky: string; sun: string; hill: string; hill2: string; heart: string }[] = [
+  { name: 'Sunset', sky: '#F3DDD7', sun: '#D4B77A', hill: '#A23B3B', hill2: '#6B1E2E', heart: '#6B1E2E' },
+  { name: 'Lagos dusk', sky: '#EFD9C4', sun: '#C47E5A', hill: '#7A5E50', hill2: '#3B2418', heart: '#A23B3B' },
+  { name: 'Garden', sky: '#EDEBDD', sun: '#E8C4BC', hill: '#8FA882', hill2: '#5E7A55', heart: '#A23B3B' },
+  { name: 'Midnight', sky: '#D9DCE6', sun: '#F7EFE3', hill: '#2E3C58', hill2: '#26324A', heart: '#E8C4BC' },
+];
+
+function PaintAndSip() {
   const reduce = useReducedMotion();
-  const [key, setKey] = useState(0);
+  const [idx, setIdx] = useState(0);
+  const p = PAINT_PALETTES[idx];
+  const stroke = (delay: number) => ({
+    initial: { pathLength: reduce ? 1 : 0, opacity: 0 },
+    animate: { pathLength: 1, opacity: 1 },
+    transition: { duration: reduce ? 0 : 1.1, delay: reduce ? 0 : delay, ease: 'easeInOut' as const },
+  });
+
   return (
-    <div className="grid gap-5 sm:grid-cols-[1fr_1.1fr] sm:items-center">
-      <button
-        type="button"
-        onClick={() => setKey((k) => k + 1)}
-        aria-label="Redraw the doodle"
-        className="ruled group relative aspect-square overflow-hidden rounded-xl border border-cocoa/10 bg-cream-light"
-      >
-        <svg key={key} viewBox="0 0 200 200" className="h-full w-full" aria-hidden="true">
-          <motion.path
-            d="M100 40c-28 0-46 22-44 52 2 26 18 52 44 54 30 2 48-26 46-54-2-30-20-50-46-52m-24 50c6-6 14-6 18 0m22-2c6-6 14-4 18 2m-30 12c-4 8-2 14 6 14m-18 16c10 10 28 10 38-2m-70-48c-10-18-2-40 20-46 18-6 40-4 56 10 12 10 14 24 12 34M80 150c-6 14-14 20-30 26m80-24c8 12 18 18 34 22"
-            fill="none"
-            stroke="#6B1E2E"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ pathLength: reduce ? 1 : 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 4, ease: 'easeInOut' }}
-          />
-        </svg>
-        <span className="absolute bottom-2 right-3 font-hand text-[0.65rem] text-rouge">a masterpiece, clearly</span>
-        <span className="absolute left-3 top-2 opacity-0 transition group-hover:opacity-100">
-          <RefreshCw className="h-3.5 w-3.5 text-cocoa-muted" />
-        </span>
-      </button>
-      <ul className="space-y-3 text-[0.92rem] text-cocoa">
+    <div>
+      <div className="space-y-2 font-serif text-[1.05rem] leading-relaxed text-cocoa">
+        <p>
+          We're going to paint together, enjoy our drinks, and see what happens when we let our creative sides out.
+        </p>
+        <p>
+          It doesn't have to be perfect. <span className="font-script text-[1.35rem] text-rouge">It just has to be ours.</span>
+        </p>
+      </div>
+
+      <div className="mt-6 grid items-end gap-5 sm:grid-cols-[1.15fr_1fr]">
+        {/* The easel + canvas: tap to repaint */}
+        <button
+          type="button"
+          onClick={() => setIdx((i) => (i + 1) % PAINT_PALETTES.length)}
+          aria-label={`Repaint the canvas (current palette: ${p.name})`}
+          className="group relative mx-auto w-full max-w-[15rem]"
+        >
+          <svg viewBox="0 0 200 230" className="w-full drop-shadow-sm" aria-hidden="true">
+            {/* easel legs */}
+            <path d="M60 150 40 226M140 150l20 76M100 150v70" stroke="#7A5E50" strokeWidth="4" strokeLinecap="round" />
+            <rect x="34" y="148" width="132" height="7" rx="2" fill="#5C3D2E" />
+            {/* canvas */}
+            <rect x="38" y="16" width="124" height="134" rx="3" fill="#FBF6EE" stroke="#3B2418" strokeOpacity=".15" />
+            <g key={idx}>
+              <motion.rect x="46" y="24" width="108" height="118" rx="2" fill={p.sky}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reduce ? 0 : 0.6 }} />
+              <motion.circle cx="124" cy="58" r="15" fill={p.sun}
+                initial={{ scale: reduce ? 1 : 0 }} animate={{ scale: 1 }} transition={{ delay: reduce ? 0 : 0.3, type: 'spring', stiffness: 160 }}
+                style={{ transformOrigin: '124px 58px' }} />
+              <motion.path d="M46 112c18-16 34-20 52-10s36 6 56-8v48H46z" fill={p.hill}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: reduce ? 0 : 0.55, duration: reduce ? 0 : 0.6 }} />
+              <motion.path d="M46 126c22-10 42-10 62-2s30 6 46-2v20H46z" fill={p.hill2}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: reduce ? 0 : 0.8, duration: reduce ? 0 : 0.6 }} />
+              {/* loose brush strokes */}
+              <motion.path d="M56 44c10-6 22-6 30 0" fill="none" stroke="#FBF6EE" strokeWidth="3" strokeLinecap="round" {...stroke(1)} />
+              <motion.path d="M62 54c8-4 16-4 22 0" fill="none" stroke="#FBF6EE" strokeWidth="2.4" strokeLinecap="round" {...stroke(1.2)} />
+              <motion.path d="M78 96s-8-4.8-8-9.6a4 4 0 0 1 8-1.6 4 4 0 0 1 8 1.6C86 91.2 78 96 78 96z" fill="none" stroke={p.heart} strokeWidth="2.4" strokeLinejoin="round" {...stroke(1.4)} />
+            </g>
+            {/* paint drips on the ledge */}
+            <circle cx="70" cy="152" r="3" fill="#A23B3B" />
+            <circle cx="122" cy="152" r="2.4" fill="#D4B77A" />
+          </svg>
+          <span className="pointer-events-none absolute right-1 top-1 rounded-full bg-cream/90 px-2 py-0.5 text-[0.58rem] uppercase tracking-[0.2em] text-cocoa-muted opacity-0 transition group-hover:opacity-100">
+            Tap to repaint
+          </span>
+        </button>
+
+        {/* Palette + two glasses */}
+        <div className="flex flex-col items-center gap-5 sm:items-start">
+          <div className="relative">
+            <svg viewBox="0 0 150 100" className="w-40" aria-hidden="true">
+              <path d="M75 6C34 6 6 28 6 54c0 22 20 38 44 38 12 0 14-8 10-16-3-7 2-12 10-12 22 0 74 4 74-22C144 20 112 6 75 6z" fill="#F4E8D8" stroke="#3B2418" strokeOpacity=".15" />
+              <ellipse cx="50" cy="72" rx="7" ry="5.5" fill="#FBF6EE" stroke="#3B2418" strokeOpacity=".12" />
+            </svg>
+            {/* paint blobs are buttons, so he can pick a palette directly */}
+            {PAINT_PALETTES.map((pal, i) => {
+              const pos = [
+                { left: '22%', top: '30%' },
+                { left: '42%', top: '16%' },
+                { left: '63%', top: '18%' },
+                { left: '80%', top: '34%' },
+              ][i];
+              return (
+                <motion.button
+                  key={pal.name}
+                  type="button"
+                  onClick={() => setIdx(i)}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={`Paint with the ${pal.name} palette`}
+                  aria-pressed={idx === i}
+                  className={`absolute h-5 w-5 -translate-x-1/2 rounded-full shadow-sm ring-offset-1 ring-offset-cream ${
+                    idx === i ? 'ring-2 ring-burgundy' : ''
+                  }`}
+                  style={{ ...pos, background: `linear-gradient(135deg, ${pal.hill}, ${pal.sun})` }}
+                />
+              );
+            })}
+          </div>
+          <p className="-mt-2 text-[0.62rem] uppercase tracking-[0.25em] text-cocoa-muted">
+            Palette: <span className="text-burgundy">{p.name}</span>
+          </p>
+
+          {/* two glasses, gently clinking */}
+          <div className="flex items-end gap-1" aria-hidden="true">
+            {[0, 1].map((g) => (
+              <motion.svg
+                key={g}
+                viewBox="0 0 40 70"
+                className="h-14 w-8"
+                animate={reduce ? undefined : { rotate: g === 0 ? [0, 8, 0] : [0, -8, 0] }}
+                transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 3.2, ease: 'easeInOut' }}
+                style={{ transformOrigin: g === 0 ? '50% 100%' : '50% 100%' }}
+              >
+                <path d="M8 4h24c0 18-4 28-12 30C12 32 8 22 8 4z" fill="#FBF6EE" fillOpacity=".7" stroke="#3B2418" strokeOpacity=".25" />
+                <path d="M9.5 14h21c-1 11-5 17-10.5 18-5.5-1-9.5-7-10.5-18z" fill={g === 0 ? '#A23B3B' : '#D4B77A'} fillOpacity=".85" />
+                <path d="M20 34v26M12 62h16" stroke="#3B2418" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
+              </motion.svg>
+            ))}
+            <span className="mb-10 ml-1 font-script text-lg text-rouge">cheers ♥</span>
+          </div>
+        </div>
+      </div>
+
+      <ul className="mt-6 flex flex-wrap justify-center gap-2 sm:justify-start">
         {[
-          { icon: <EyeOff className="h-4 w-4" />, t: 'Eyes on each other, never on the paper.' },
-          { icon: <Timer className="h-4 w-4" />, t: 'Two minutes each. No peeking, no lifting the pen.' },
-          { icon: <PenLine className="h-4 w-4" />, t: 'Sign it, date it. We keep both forever.' },
+          { icon: <Palette className="h-3.5 w-3.5" />, t: 'One canvas each' },
+          { icon: <Wine className="h-3.5 w-3.5" />, t: 'Something to sip' },
+          { icon: <Heart className="h-3.5 w-3.5" />, t: 'Zero judgement' },
         ].map((r) => (
-          <li key={r.t} className="flex gap-3">
-            <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blush-light text-burgundy">
-              {r.icon}
-            </span>
+          <li key={r.t} className="inline-flex items-center gap-1.5 rounded-full bg-blush-light px-3 py-1.5 text-xs text-burgundy">
+            {r.icon}
             {r.t}
           </li>
         ))}
@@ -310,12 +402,12 @@ export function Activities() {
         </Reveal>
         <Reveal delay={0.08}>
           <ActivityCard
-            icon={<PenLine className="h-4 w-4" />}
-            label="Game 02"
-            title="The Drawing Challenge"
-            blurb="We draw each other without looking at the paper. The results will be tragic and I will treasure them."
+            icon={<Brush className="h-4 w-4" />}
+            label="Get creative"
+            title="Paint & Sip 🎨"
+            blurb="A little creativity, a little colour, a little something to sip on, and a whole lot of fun."
           >
-            <DrawingChallenge />
+            <PaintAndSip />
           </ActivityCard>
         </Reveal>
         <Reveal delay={0.04}>

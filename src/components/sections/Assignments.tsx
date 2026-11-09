@@ -21,11 +21,29 @@ function Rings({ className = '' }: { className?: string }) {
   );
 }
 
+/** A small sprout in a terracotta pot, with a tiny heart-shaped leaf. */
+function Sprout({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 80 80" className={className} aria-hidden="true">
+      <path d="M40 52V30" stroke="#5E7A55" strokeWidth="2" strokeLinecap="round" />
+      <path d="M40 40c-10 0-16-6-16-14 9 0 16 5 16 14z" fill="#8FA882" />
+      <path d="M40 34c8 0 14-5 14-12-8 0-14 4-14 12z" fill="#A9BE9C" />
+      <path d="M40 31s-4.2-2.5-4.2-5.2a2.2 2.2 0 0 1 4.2-.9 2.2 2.2 0 0 1 4.2.9c0 2.7-4.2 5.2-4.2 5.2z" fill="#A23B3B" />
+      <path d="M24 52h32l-4 20H28z" fill="#C47E5A" />
+      <rect x="22" y="49" width="36" height="6" rx="2" fill="#B06B48" />
+      <path d="M30 62h20" stroke="#E8C4BC" strokeOpacity=".7" strokeWidth="1" strokeDasharray="2 3" />
+      <circle cx="62" cy="20" r="1.4" fill="#D4B77A" />
+      <circle cx="18" cy="28" r="1" fill="#D4B77A" />
+    </svg>
+  );
+}
+
 const ICONS: Record<string, ReactNode> = {
   vow: <Rings className="h-16 w-24" />,
   memories: <Hourglass className="h-9 w-9 text-gold" strokeWidth={1.1} />,
   soundtrack: <Music4 className="h-9 w-9 text-gold" strokeWidth={1.1} />,
   future: <Telescope className="h-9 w-9 text-gold" strokeWidth={1.1} />,
+  grow: <Sprout className="h-20 w-20" />,
 };
 
 function ProgressRing({ value, total }: { value: number; total: number }) {
@@ -65,14 +83,16 @@ function AssignmentCard({
   done,
   onToggle,
   index,
+  wide = false,
 }: {
+  wide?: boolean;
   a: Assignment;
   done: boolean;
   onToggle: () => void;
   index: number;
 }) {
   return (
-    <Reveal delay={index * 0.08}>
+    <Reveal delay={index * 0.08} className={wide ? 'md:col-span-2 md:mx-auto md:w-full md:max-w-[calc(50%+12rem)]' : ''}>
       <motion.article
         layout
         whileHover={{ y: -5 }}
@@ -100,6 +120,9 @@ function AssignmentCard({
             <p className="font-display text-5xl leading-none text-blush">{a.number}</p>
             <p className="eyebrow mt-3">{a.kicker}</p>
             <h3 className="mt-1.5 font-display text-2xl text-burgundy sm:text-[1.7rem]">{a.title}</h3>
+            {a.subtitle && (
+              <p className="mt-2 max-w-md font-serif text-lg italic leading-snug text-rouge">{a.subtitle}</p>
+            )}
           </div>
           <div className="shrink-0 pt-1">{ICONS[a.id] ?? <Feather className="h-9 w-9 text-gold" />}</div>
         </div>
@@ -119,6 +142,15 @@ function AssignmentCard({
             </ul>
           )}
           {a.note && <p className="font-hand text-sm leading-loose text-rouge">{a.note}</p>}
+          {a.reminder && (
+            <aside className="!mt-6 flex gap-3 rounded-xl border border-gold/30 bg-blush-light/40 px-4 py-3.5 font-sans text-[0.85rem] leading-relaxed text-cocoa-light">
+              <span className="mt-0.5 text-gold" aria-hidden="true">✿</span>
+              <p>
+                <span className="mb-0.5 block text-[0.6rem] uppercase tracking-[0.25em] text-gold">A gentle reminder</span>
+                {a.reminder}
+              </p>
+            </aside>
+          )}
         </div>
 
         <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-dashed border-cocoa/15 pt-5">
@@ -189,7 +221,15 @@ export function Assignments() {
 
       <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-2">
         {ASSIGNMENTS.map((a, i) => (
-          <AssignmentCard key={a.id} a={a} index={i} done={!!done[a.id]} onToggle={() => toggle(a.id)} />
+          <AssignmentCard
+            key={a.id}
+            a={a}
+            index={i}
+            // An odd card out at the end spans both columns so the grid stays balanced.
+            wide={ASSIGNMENTS.length % 2 === 1 && i === ASSIGNMENTS.length - 1}
+            done={!!done[a.id]}
+            onToggle={() => toggle(a.id)}
+          />
         ))}
       </div>
 

@@ -27,16 +27,17 @@ export interface Assignment {
 
 export const ASSIGNMENTS: Assignment[] = [
   {
-    id: 'vow',
+    id: 'letter',
     number: '01',
-    title: 'The Wedding Vow',
-    kicker: 'The serious one. Sort of.',
+    title: 'A Letter to My Favourite Person',
+    kicker: 'A little something from your heart',
     body: [
-      "Imagine we're getting married.",
-      'I want you to write a vow for me. Something sweet, funny, meaningful, emotional, or all of the above.',
-      'You will read it to me when we meet.',
-      'And yes, I expect you to put some thought into it.',
+      "Write me a little letter. Nothing too formal, and definitely no vows.",
+      'Tell me something you appreciate about us, something about me that makes you smile, and something you wish I knew.',
+      'It can be sweet, funny, sentimental, or a little bit of everything.',
+      'Bring it with you and read it to me when we meet.',
     ],
+    note: 'No pressure to make it perfect. Just make it yours.',
   },
   {
     id: 'memories',
@@ -44,7 +45,11 @@ export const ASSIGNMENTS: Assignment[] = [
     title: 'The Memory Test',
     kicker: 'Three little time machines',
     body: ['Prepare three memories of us:'],
-    list: ['Your favourite memory', 'The funniest memory', 'One memory you wish you could relive'],
+    list: [
+      'Your favourite memory',
+      'The funniest memory',
+      'One memory you wish you could relive',
+    ],
     note: 'Keep them to yourself until we meet.',
   },
   {
@@ -73,7 +78,8 @@ export const ASSIGNMENTS: Assignment[] = [
     number: '05',
     title: 'A Little Room to Grow',
     kicker: 'Growing, together',
-    subtitle: 'Because loving each other also means helping each other become better.',
+    subtitle:
+      'Because loving each other also means helping each other become better.',
     body: [
       "We're both growing, learning, and becoming the people we want to be.",
       "For this assignment, I want you to think about one thing you'd love for me to work on or improve.",
